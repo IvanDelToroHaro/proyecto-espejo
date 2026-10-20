@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevTask - Enfoque Vanilla JS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <h1>DevTask 🚀 <small>Vanilla JS Edition</small></h1>
+    </header>
+
+    <!-- Formulario para añadir nuevas tareas -->
+    <section class="form-section">
+      <form id="form-tareas">
+        <input type="text" id="input-titulo" placeholder="¿Qué tienes que programar hoy?..." required>
+        <select id="select-prioridad">
+          <option value="Alta">Alta</option>
+          <option value="Media" selected>Media</option>
+          <option value="Baja">Baja</option>
+        </select>
+        <button type="submit">Añadir Tarea</button>
+      </form>
+    </section>
+
+    <!-- Botones de Filtrado de Estado -->
+    <section class="filter-section">
+      <button class="btn-filtro active" data-filtro="Todas">Todas</button>
+      <button class="btn-filtro" data-filtro="Pendientes">Pendientes</button>
+      <button class="btn-filtro" data-filtro="Completadas">Completadas</button>
+    </section>
+
+    <!-- Contenedor Dinámico para las Tareas -->
+    <main class="tasks-section">
+      <div id="loading-state" class="loading">Cargando tareas desde el servidor...</div>
+      <ul id="lista-tareas">
+        <!-- Las tareas generadas con JS se inyectarán aquí -->
+      </ul>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
