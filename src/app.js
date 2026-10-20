@@ -18,9 +18,9 @@ const botonesFiltro = document.querySelectorAll('.btn-filtro');
 
 // 3. FUNCIÓN ASÍNCRONA (AJAX simulado): Debe ejecutarse al arrancar la web
 async function inicializarApp() {
-  // TODO: Simular una espera de 1.5 segundos usando una Promesa (setTimeout)
-  // TODO: Una vez pasada la espera, ocultar el div #loading-state
-  // TODO: Invocar a la función pintarTareas()
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  loadingState.style.display = 'none';
+  pintarTareas();
 }
 
 // 4. FUNCIÓN DE RENDERIZADO: Encargada de pintar los nodos en el HTML
