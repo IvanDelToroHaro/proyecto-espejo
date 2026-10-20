@@ -35,9 +35,26 @@ function pintarTareas() {
 
   tareasFiltradas.forEach(tarea => {
     const elementoTarea = document.createElement('li');
-    // TODO: Configurar las clases CSS según la prioridad y el estado (completada)
-    // TODO: Añadir un botón dentro de cada <li> para poder alternar el estado (Completada/Pendiente)
-    // TODO: Inyectar el <li> resultante en listaContenedor usando .appendChild()
+    elementoTarea.className = `item-tarea ${tarea.prioridad}${tarea.completada ? ' completada' : ''}`;
+
+    const tituloTarea = document.createElement('span');
+    tituloTarea.textContent = tarea.titulo;
+    elementoTarea.appendChild(tituloTarea);
+
+    const botonEstado = document.createElement('button');
+    botonEstado.type = 'button';
+    botonEstado.textContent = tarea.completada ? 'Marcar pendiente' : 'Completar';
+    botonEstado.addEventListener('click', () => {
+      tareas = tareas.map(tareaActual => (
+        tareaActual.id === tarea.id
+          ? { ...tareaActual, completada: !tareaActual.completada }
+          : tareaActual
+      ));
+      pintarTareas();
+    });
+    elementoTarea.appendChild(botonEstado);
+
+    listaContenedor.appendChild(elementoTarea);
   });
 }
 
