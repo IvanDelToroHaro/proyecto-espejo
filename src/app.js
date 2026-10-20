@@ -70,8 +70,9 @@ formulario.addEventListener('submit', (event) => {
     prioridad,
     completada: false
   };
-  // TODO: Añadir el objeto al array global de tareas de forma inmutable (operador spread)
-  // TODO: Volver a invocar pintarTareas() y resetear el formulario
+  tareas = [...tareas, nuevaTarea];
+  pintarTareas();
+  formulario.reset();
 });
 
 // 6. MANEJO DE EVENTOS: Captura de botones de filtrado
