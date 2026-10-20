@@ -80,10 +80,10 @@ botonesFiltro.forEach(boton => {
   boton.addEventListener('click', (event) => {
     // Quitar clase active al botón anterior y ponérsela al pulsado
     document.querySelector('.btn-filtro.active').classList.remove('active');
-    event.target.classList.add('active');
+    boton.classList.add('active');
 
-    // TODO: Actualizar la variable 'filtroActual' con el atributo 'data-filtro' del botón
-    // TODO: Invocar pintarTareas() para refrescar la pantalla
+    filtroActual = boton.dataset.filtro;
+    pintarTareas();
   });
 });
 
