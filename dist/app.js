@@ -1,4 +1,18 @@
 "use strict";
+const usuarioValido = {
+    id: 1,
+    username: 'ana',
+    email: 'ana@example.com',
+    rol: 'alumno',
+    token: 'token-de-prueba'
+};
+const usuarioInvalido = {
+    id: 2,
+    username: 'invitado',
+    email: 'invitado@example.com',
+    // @ts-expect-error El tipo UsuarioAPI no permite el rol "invitado".
+    rol: 'invitado'
+};
 function esPrioridad(valor) {
     return valor === 'Alta' || valor === 'Media' || valor === 'Baja';
 }

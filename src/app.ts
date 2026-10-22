@@ -1,6 +1,30 @@
 type Prioridad = 'Alta' | 'Media' | 'Baja';
 type Filtro = 'Todas' | 'Pendientes' | 'Completadas';
 
+interface UsuarioAPI {
+  id: number;
+  username: string;
+  email: string;
+  rol: 'admin' | 'editor' | 'alumno';
+  token?: string;
+}
+
+const usuarioValido: UsuarioAPI = {
+  id: 1,
+  username: 'ana',
+  email: 'ana@example.com',
+  rol: 'alumno',
+  token: 'token-de-prueba'
+};
+
+const usuarioInvalido: UsuarioAPI = {
+  id: 2,
+  username: 'invitado',
+  email: 'invitado@example.com',
+  // @ts-expect-error El tipo UsuarioAPI no permite el rol "invitado".
+  rol: 'invitado'
+};
+
 interface Tarea {
   id: number;
   titulo: string;
