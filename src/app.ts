@@ -1,20 +1,50 @@
+type Prioridad = 'Alta' | 'Media' | 'Baja';
+type Filtro = 'Todas' | 'Pendientes' | 'Completadas';
+
+interface Tarea {
+  id: number;
+  titulo: string;
+  prioridad: Prioridad;
+  completada: boolean;
+}
+
+function esPrioridad(valor: string): valor is Prioridad {
+  return valor === 'Alta' || valor === 'Media' || valor === 'Baja';
+}
+
+function esFiltro(valor: string | undefined): valor is Filtro {
+  return valor === 'Todas' || valor === 'Pendientes' || valor === 'Completadas';
+}
+
+function obtenerElemento<T extends Element>(selector: string): T {
+  const elemento = document.querySelector<T>(selector);
+  if (!elemento) {
+    throw new Error(`No se encontró el elemento "${selector}".`);
+  }
+  return elemento;
+}
+
 // 1. Estado de la aplicación (Datos iniciales que simulan venir de una base de datos)
-let tareas = [
+let tareas: Tarea[] = [
   { id: 1, titulo: 'Aprender la sintaxis de ES6', prioridad: 'Alta', completada: true },
   { id: 2, titulo: 'Dominar la asincronía y Fetch', prioridad: 'Media', completada: false },
   { id: 3, titulo: 'Migrar el proyecto a Angular', prioridad: 'Baja', completada: false }
 ];
 
 // Estado del filtro activo actual ('Todas', 'Pendientes', 'Completadas')
-let filtroActual = 'Todas';
+let filtroActual: Filtro = 'Todas';
 
 // 2. Selectores del DOM principales
-const formulario = document.querySelector('#form-tareas');
-const inputTitulo = document.querySelector('#input-titulo');
-const selectPrioridad = document.querySelector('#select-prioridad');
-const listaContenedor = document.querySelector('#lista-tareas');
-const loadingState = document.querySelector('#loading-state');
-const botonesFiltro = document.querySelectorAll('.btn-filtro');
+const formulario = obtenerElemento<HTMLFormElement>('#form-tareas');
+const inputTitulo = obtenerElemento<HTMLInputElement>('#input-titulo');
+const selectPrioridad = obtenerElemento<HTMLSelectElement>('#select-prioridad');
+const listaContenedor = obtenerElemento<HTMLUListElement>('#lista-tareas');
+const loadingState = obtenerElemento<HTMLDivElement>('#loading-state');
+const botonesFiltro = document.querySelectorAll<HTMLButtonElement>('.btn-filtro');
+
+if (botonesFiltro.length === 0) {
+  throw new Error('No se encontraron botones de filtrado.');
+}
 
 // 3. FUNCIÓN ASÍNCRONA (AJAX simulado): Debe ejecutarse al arrancar la web
 async function inicializarApp() {
@@ -63,7 +93,17 @@ formulario.addEventListener('submit', (event) => {
   event.preventDefault();
   
   const titulo = inputTitulo.value.trim();
+  if (!titulo) {
+    inputTitulo.setCustomValidity('Escribe un título para la tarea.');
+    inputTitulo.reportValidity();
+    return;
+  }
+
   const prioridad = selectPrioridad.value;
+  if (!esPrioridad(prioridad)) {
+    throw new Error(`La prioridad "${prioridad}" no es válida.`);
+  }
+
   const nuevaTarea = {
     id: Date.now(),
     titulo,
@@ -75,14 +115,23 @@ formulario.addEventListener('submit', (event) => {
   formulario.reset();
 });
 
+inputTitulo.addEventListener('input', () => {
+  inputTitulo.setCustomValidity('');
+});
+
 // 6. MANEJO DE EVENTOS: Captura de botones de filtrado
 botonesFiltro.forEach(boton => {
-  boton.addEventListener('click', (event) => {
+  boton.addEventListener('click', () => {
     // Quitar clase active al botón anterior y ponérsela al pulsado
-    document.querySelector('.btn-filtro.active').classList.remove('active');
+    const filtro = boton.dataset.filtro;
+    if (!esFiltro(filtro)) {
+      throw new Error(`El filtro "${filtro}" no es válido.`);
+    }
+
+    botonesFiltro.forEach(botonFiltro => botonFiltro.classList.remove('active'));
     boton.classList.add('active');
 
-    filtroActual = boton.dataset.filtro;
+    filtroActual = filtro;
     pintarTareas();
   });
 });
