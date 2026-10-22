@@ -6,6 +6,21 @@ function procesarRespuesta(res) {
     }
     console.error(res.mensajeError);
 }
+class ServicioDatos {
+    endpoint;
+    constructor(endpoint) {
+        this.endpoint = endpoint;
+    }
+    conectar() {
+        console.log('Conectando a ' + this.endpoint);
+    }
+}
+class ServicioUsuarios extends ServicioDatos {
+    entidad = 'usuarios';
+    constructor(endpoint) {
+        super(endpoint);
+    }
+}
 const usuarioValido = {
     id: 1,
     username: 'ana',

@@ -16,6 +16,22 @@ function procesarRespuesta(res: RespuestaServidor): void {
   console.error(res.mensajeError);
 }
 
+class ServicioDatos {
+  constructor(public endpoint: string) {}
+
+  conectar(): void {
+    console.log('Conectando a ' + this.endpoint);
+  }
+}
+
+class ServicioUsuarios extends ServicioDatos {
+  public entidad = 'usuarios';
+
+  constructor(endpoint: string) {
+    super(endpoint);
+  }
+}
+
 interface UsuarioAPI {
   id: number;
   username: string;
