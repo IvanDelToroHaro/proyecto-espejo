@@ -13,6 +13,16 @@ const usuarioInvalido = {
     // @ts-expect-error El tipo UsuarioAPI no permite el rol "invitado".
     rol: 'invitado'
 };
+const misTareas = [
+    { id: 1, titulo: 'Aprender TypeScript', prioridad: 'Alta', completada: false },
+    { id: 2, titulo: 'Practicar interfaces', prioridad: 'Media', completada: false },
+    { id: 3, titulo: 'Crear un componente', prioridad: 'Baja', completada: false }
+];
+function completarTarea(lista, idBuscar) {
+    return lista.map(tarea => (tarea.id === idBuscar
+        ? { ...tarea, completada: true }
+        : tarea));
+}
 function esPrioridad(valor) {
     return valor === 'Alta' || valor === 'Media' || valor === 'Baja';
 }

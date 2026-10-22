@@ -32,6 +32,20 @@ interface Tarea {
   completada: boolean;
 }
 
+const misTareas: Tarea[] = [
+  { id: 1, titulo: 'Aprender TypeScript', prioridad: 'Alta', completada: false },
+  { id: 2, titulo: 'Practicar interfaces', prioridad: 'Media', completada: false },
+  { id: 3, titulo: 'Crear un componente', prioridad: 'Baja', completada: false }
+];
+
+function completarTarea(lista: Tarea[], idBuscar: number): Tarea[] {
+  return lista.map(tarea => (
+    tarea.id === idBuscar
+      ? { ...tarea, completada: true }
+      : tarea
+  ));
+}
+
 function esPrioridad(valor: string): valor is Prioridad {
   return valor === 'Alta' || valor === 'Media' || valor === 'Baja';
 }
