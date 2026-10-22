@@ -25,6 +25,28 @@ const usuarioInvalido: UsuarioAPI = {
   rol: 'invitado'
 };
 
+class ProductComponent {
+  private iva = 0.21;
+
+  constructor(
+    public nombreProducto: string,
+    private precioBase: number
+  ) {}
+
+  obtenerPrecioFinal(): number {
+    return this.precioBase * (1 + this.iva);
+  }
+}
+
+const producto = new ProductComponent('Teclado', 50);
+
+if (false) {
+  // @ts-expect-error precioBase es privado y no puede modificarse desde fuera de la clase.
+  producto.precioBase = 100;
+}
+
+console.log(`${producto.nombreProducto}: ${producto.obtenerPrecioFinal()} €`);
+
 interface Tarea {
   id: number;
   titulo: string;
