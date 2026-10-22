@@ -1,6 +1,21 @@
 type Prioridad = 'Alta' | 'Media' | 'Baja';
 type Filtro = 'Todas' | 'Pendientes' | 'Completadas';
 
+interface RespuestaServidor {
+  status: 'success' | 'error';
+  data?: string[];
+  mensajeError?: string;
+}
+
+function procesarRespuesta(res: RespuestaServidor): void {
+  if (res.status === 'success') {
+    res.data?.forEach(texto => console.log(texto));
+    return;
+  }
+
+  console.error(res.mensajeError);
+}
+
 interface UsuarioAPI {
   id: number;
   username: string;

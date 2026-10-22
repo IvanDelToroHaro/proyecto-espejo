@@ -1,4 +1,11 @@
 "use strict";
+function procesarRespuesta(res) {
+    if (res.status === 'success') {
+        res.data?.forEach(texto => console.log(texto));
+        return;
+    }
+    console.error(res.mensajeError);
+}
 const usuarioValido = {
     id: 1,
     username: 'ana',
