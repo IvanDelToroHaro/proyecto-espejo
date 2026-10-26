@@ -82,27 +82,28 @@ let tareas = [
     { id: 2, titulo: 'Dominar la asincronía y Fetch', prioridad: 'Media', completada: false },
     { id: 3, titulo: 'Migrar el proyecto a Angular', prioridad: 'Baja', completada: false }
 ];
+// Copia independiente de los datos que se muestran en la interfaz.
+let listaEspejo = [];
 // Estado del filtro activo actual ('Todas', 'Pendientes', 'Completadas')
 let filtroActual = 'Todas';
 // 2. Selectores del DOM principales
 const formulario = obtenerElemento('#form-tareas');
+const formularioContenedor = obtenerElemento('.form-section');
 const inputTitulo = obtenerElemento('#input-titulo');
 const selectPrioridad = obtenerElemento('#select-prioridad');
 const listaContenedor = obtenerElemento('#lista-tareas');
 const loadingState = obtenerElemento('#loading-state');
-const botonesFiltro = document.querySelectorAll('.btn-filtro');
-if (botonesFiltro.length === 0) {
+const filtrosContenedor = obtenerElemento('.filter-section');
+if (!filtrosContenedor.querySelector('.btn-filtro')) {
     throw new Error('No se encontraron botones de filtrado.');
 }
 // 3. FUNCIÓN ASÍNCRONA (AJAX simulado): Debe ejecutarse al arrancar la web
 async function inicializarApp() {
     await new Promise(resolve => setTimeout(resolve, 1500));
     loadingState.style.display = 'none';
-    pintarTareas();
+    actualizarVista();
 }
-// 4. FUNCIÓN DE RENDERIZADO: Encargada de pintar los nodos en el HTML
-function pintarTareas() {
-    listaContenedor.innerHTML = '';
+function actualizarListaEspejo() {
     const tareasFiltradas = tareas.filter(tarea => {
         if (filtroActual === 'Pendientes')
             return !tarea.completada;
@@ -110,27 +111,33 @@ function pintarTareas() {
             return tarea.completada;
         return true;
     });
-    tareasFiltradas.forEach(tarea => {
+    listaEspejo = tareasFiltradas.map(tarea => ({ ...tarea }));
+}
+// 4. FUNCIÓN DE RENDERIZADO: pinta la copia de los datos en el HTML
+function pintarTareas() {
+    listaContenedor.innerHTML = '';
+    listaEspejo.forEach(tarea => {
         const elementoTarea = document.createElement('li');
         elementoTarea.className = `item-tarea ${tarea.prioridad}${tarea.completada ? ' completada' : ''}`;
+        elementoTarea.dataset.id = String(tarea.id);
         const tituloTarea = document.createElement('span');
         tituloTarea.textContent = tarea.titulo;
         elementoTarea.appendChild(tituloTarea);
         const botonEstado = document.createElement('button');
         botonEstado.type = 'button';
         botonEstado.textContent = tarea.completada ? 'Marcar pendiente' : 'Completar';
-        botonEstado.addEventListener('click', () => {
-            tareas = tareas.map(tareaActual => (tareaActual.id === tarea.id
-                ? { ...tareaActual, completada: !tareaActual.completada }
-                : tareaActual));
-            pintarTareas();
-        });
         elementoTarea.appendChild(botonEstado);
         listaContenedor.appendChild(elementoTarea);
     });
 }
+function actualizarVista() {
+    actualizarListaEspejo();
+    pintarTareas();
+}
 // 5. MANEJO DE EVENTOS: Captura de formulario
-formulario.addEventListener('submit', (event) => {
+formularioContenedor.addEventListener('submit', (event) => {
+    if (event.target !== formulario)
+        return;
     event.preventDefault();
     const titulo = inputTitulo.value.trim();
     if (!titulo) {
@@ -149,25 +156,48 @@ formulario.addEventListener('submit', (event) => {
         completada: false
     };
     tareas = [...tareas, nuevaTarea];
-    pintarTareas();
+    actualizarVista();
     formulario.reset();
 });
-inputTitulo.addEventListener('input', () => {
+formulario.addEventListener('input', (event) => {
+    if (event.target !== inputTitulo)
+        return;
     inputTitulo.setCustomValidity('');
 });
 // 6. MANEJO DE EVENTOS: Captura de botones de filtrado
-botonesFiltro.forEach(boton => {
-    boton.addEventListener('click', () => {
-        // Quitar clase active al botón anterior y ponérsela al pulsado
-        const filtro = boton.dataset.filtro;
-        if (!esFiltro(filtro)) {
-            throw new Error(`El filtro "${filtro}" no es válido.`);
-        }
-        botonesFiltro.forEach(botonFiltro => botonFiltro.classList.remove('active'));
-        boton.classList.add('active');
-        filtroActual = filtro;
-        pintarTareas();
-    });
+filtrosContenedor.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element))
+        return;
+    const boton = event.target.closest('.btn-filtro');
+    if (!(boton instanceof HTMLButtonElement) || !filtrosContenedor.contains(boton))
+        return;
+    const filtro = boton.dataset.filtro;
+    if (!esFiltro(filtro)) {
+        throw new Error(`El filtro "${filtro}" no es válido.`);
+    }
+    filtrosContenedor.querySelectorAll('.btn-filtro')
+        .forEach(botonFiltro => botonFiltro.classList.remove('active'));
+    boton.classList.add('active');
+    filtroActual = filtro;
+    actualizarVista();
+});
+listaContenedor.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element))
+        return;
+    const boton = event.target.closest('button');
+    if (!boton || !listaContenedor.contains(boton))
+        return;
+    const elementoTarea = boton.closest('li.item-tarea');
+    if (!elementoTarea || elementoTarea.parentElement !== listaContenedor)
+        return;
+    const idTarea = Number(elementoTarea.dataset.id);
+    if (!Number.isFinite(idTarea)) {
+        throw new Error('No se encontró un identificador válido para la tarea.');
+    }
+    tareas = tareas.map(tarea => (tarea.id === idTarea
+        ? { ...tarea, completada: !tarea.completada }
+        : tarea));
+    actualizarVista();
 });
 // Arrancar la aplicación
 inicializarApp();
